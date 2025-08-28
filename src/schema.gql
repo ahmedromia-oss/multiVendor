@@ -1,0 +1,185 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type GetClientDto {
+  userId: ID!
+  phone: String
+  address: String
+}
+
+type GetUserDto {
+  """User unique identifier"""
+  id: ID
+
+  """User username"""
+  username: String
+
+  """User email address"""
+  email: String
+
+  """User type/role"""
+  userType: UserType
+
+  """Whether the user is approved"""
+  isApproved: Boolean
+
+  """User creation date"""
+  createdAt: String
+
+  """User last update date"""
+  updatedAt: String
+}
+
+"""The supported user types"""
+enum UserType {
+  CLIENT
+  VENDOR
+  SUPER_ADMIN
+}
+
+type GetVendorDto {
+  user: GetUserDto!
+  storeName: String
+  description: String
+  phone: String
+  address: String
+}
+
+type AuthResponseDto {
+  token: String!
+}
+
+type ProductDto {
+  id: ID!
+  title: String!
+  photo: String
+  stockQuantity: Int!
+  price: Float!
+  vendorId: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  vendor: GetVendorDto!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type CartItemDto {
+  id: ID!
+  cartId: ID!
+  productId: ID!
+  product: ProductDto!
+  quantity: Int!
+
+  """Total price for this cart item (quantity * product price)"""
+  totalPrice: Int!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type CartGetDTO {
+  id: ID!
+  client: GetClientDto!
+  clientId: ID!
+  items: [CartItemDto!]!
+  status: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  totalAmount: Float!
+}
+
+type getOrderDto {
+  id: ID!
+  status: String!
+  subTotal: Float!
+  shippingFee: Float
+  cart: CartGetDTO!
+  cartId: String!
+}
+
+type Query {
+  getCart(cartId: String!): CartGetDTO!
+  getVendors: [GetVendorDto!]!
+  getVendor(id: ID!): GetVendorDto
+  getProducts(take: Float, skip: Float): [ProductDto!]!
+
+  """Verify JWT token validity"""
+  verifyToken(token: String!): Boolean!
+  getUsers: [GetUserDto!]!
+  getUser(id: ID!): GetUserDto
+  findOneUser(field: String!, value: String!): GetUserDto
+  getclientById(userId: ID!): GetClientDto
+}
+
+type Mutation {
+  createCart: CartGetDTO!
+  updateUser(id: ID!, input: UpdateUserDto!): String!
+  deleteUser(id: ID!): String!
+  createProduct(data: CreateProductInput!): ProductDto!
+  updateProduct(data: UpdateProductInput!): String!
+  DeleteProduct(productId: String!): String!
+  checkout(data: updateOrderDto!): getOrderDto!
+  updateQuantity(data: updateCartItem!): String!
+  login(input: LoginDto!): AuthResponseDto!
+
+  """Register new user account"""
+  register(input: CreateUserDto!): GetUserDto!
+  createUser(input: CreateUserDto!): GetUserDto!
+  ApproveUser(id: String!): String!
+  updateClient(userId: String!, data: UpdateClientDto!): String!
+  follow(vendorId: String!): String!
+}
+
+input UpdateUserDto {
+  """User username"""
+  username: String
+
+  """User email address"""
+  email: String
+}
+
+input CreateProductInput {
+  title: String!
+  price: Float
+  stockQuantity: Float!
+}
+
+input UpdateProductInput {
+  title: String
+  price: Float
+}
+
+input updateOrderDto {
+  cartId: String!
+}
+
+input updateCartItem {
+  quantity: Float!
+  cartId: String!
+  productId: String!
+}
+
+input LoginDto {
+  email: String!
+  password: String!
+}
+
+input CreateUserDto {
+  """User username"""
+  username: String!
+
+  """User email address"""
+  email: String!
+
+  """User password"""
+  password: String!
+  userType: String!
+}
+
+input UpdateClientDto {
+  phone: String
+  address: String
+}
