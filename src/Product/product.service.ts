@@ -27,6 +27,7 @@ export class ProductService
     manager?: EntityManager,
   ): Promise<Product> {
     const executeCreate = async (transactionManager: EntityManager) => {
+      
       await this.vendorService.findOne(
         {
           where: { userId: data.vendorId },

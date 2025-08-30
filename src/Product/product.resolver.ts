@@ -83,10 +83,14 @@ export class ProductResolver
   @Roles(UserType.VENDOR, UserType.SUPER_ADMIN)
   @Mutation(() => String, { name: 'updateProduct' })
   async updateProduct(
+    @Args('prodId') prodId:string,
     @Args('data') data: UpdateProductInput,
     @CurrentUser() user: UserToken,
   ): Promise<string> {
-    return await this.update({ vendorId: user.sub }, data);
+    if(user.type == UserType.SUPER_ADMIN){
+      return await this.update({id:prodId} , data)
+    }
+    return await this.update({id:prodId , vendorId: user.sub }, data);
   }
 
   @UseGuards(AuthGuard, RolesGuard , IsApprovedGaurd)
@@ -96,6 +100,9 @@ export class ProductResolver
     @Args('productId') productId: string,
     @CurrentUser() user: UserToken,
   ): Promise<string> {
+    if(user.type == UserType.SUPER_ADMIN){
+      return await this.delete({id:productId})
+    }
     return await this.delete({ vendorId: user.sub, id: productId });
   }
 }
