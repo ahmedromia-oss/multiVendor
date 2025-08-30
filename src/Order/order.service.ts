@@ -130,7 +130,7 @@ export class OrderService extends BaseService<Order> implements IOrderService {
         },
         transactionalManager,
       );
-      this.eventEmitter.emit(OrderEvents.ORDER_PROCESSING);
+      this.eventEmitter.emit(OrderEvents.ORDER_PROCESSING , result.id);
       return result;
     } else {
       throw new BadRequestException('Cart Already completed');

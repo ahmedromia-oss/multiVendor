@@ -26,6 +26,7 @@ import { Vendor } from 'src/Vendor/vendor.model';
 import { IDataLoader } from 'Interfaces/IServices/IDataLoaderService';
 import { VendorService } from 'src/Vendor/vendor.service';
 import { GetVendorDto } from 'src/Vendor/DTOs/getVendor.dto';
+import { IsApprovedGaurd } from 'shared/Guards/IsApprovedGaurd';
 
 // @Injectable()
 @Resolver(() => ProductDto)
@@ -67,8 +68,9 @@ export class ProductResolver
   }
   
   @Mutation(() => ProductDto, { name: 'createProduct' })
-  @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(AuthGuard, RolesGuard , IsApprovedGaurd)
   @Roles(UserType.VENDOR, UserType.SUPER_ADMIN)
+  
   async createProduct(
     @CurrentUser() user: UserToken,
     @Args('data') data: CreateProductInput,
@@ -77,7 +79,7 @@ export class ProductResolver
     return await this.create({ ...data, vendorId: user.sub });
   }
 
-  @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(AuthGuard, RolesGuard , IsApprovedGaurd)
   @Roles(UserType.VENDOR, UserType.SUPER_ADMIN)
   @Mutation(() => String, { name: 'updateProduct' })
   async updateProduct(
@@ -87,7 +89,7 @@ export class ProductResolver
     return await this.update({ vendorId: user.sub }, data);
   }
 
-  @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(AuthGuard, RolesGuard , IsApprovedGaurd)
   @Roles(UserType.VENDOR, UserType.SUPER_ADMIN)
   @Mutation(() => String, { name: 'DeleteProduct' })
   async DeleteProduct(

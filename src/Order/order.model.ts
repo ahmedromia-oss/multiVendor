@@ -1,6 +1,5 @@
 import { OrderStatus } from 'shared/constants';
 import { Cart } from 'src/Cart/cart.model';
-import { Payment } from 'src/Payment/models/Payment.model';
 import {
   Column,
   Entity,
@@ -28,6 +27,5 @@ export class Order {
 
   @Column('uuid')
   cartId: string;
-  @OneToMany(() => Payment, (payment) => payment.order, { cascade: true })
-  payments: Payment[];
+  
 }

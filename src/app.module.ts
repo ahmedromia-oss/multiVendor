@@ -17,8 +17,7 @@ import { OrderModule } from './Order/order.module';
 import { UnitOfWorkModule } from './UnitOfWork/UnitOfWork.module';
 import { ProductModule } from './Product/product.module';
 import { FollowModule } from './ClientVendorFollow/Follow.module';
-import { PaymentModule } from './Payment/Payment.module';
-import { StripeModule } from './Stripe/stripe.module';
+
 import { BullModule } from '@nestjs/bull';
 import * as dotenv from 'dotenv';
 import { MailModule } from './Mail/Mail.module';
@@ -62,8 +61,7 @@ dotenv.config();
     }),
     MailModule,
 
-    StripeModule,
-    PaymentModule,
+   
     FollowModule,
     ProductModule,
     UnitOfWorkModule,

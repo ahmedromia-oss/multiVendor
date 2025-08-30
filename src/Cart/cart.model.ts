@@ -2,7 +2,6 @@ import { CartStatus } from 'shared/constants';
 import { CartItem } from 'src/CartItem/CartItem.model';
 import { Client } from 'src/Client/client.model';
 import { Order } from 'src/Order/order.model';
-import { PaymentSession } from 'src/Payment/models/PaymentSession.model';
 import {
   Check,
   Column,
@@ -19,11 +18,6 @@ import {
 
 @Entity()
 export class Cart {
-  @OneToOne(() => PaymentSession, (paymentSession) => paymentSession.cart, {
-    cascade: true,
-    nullable: true,
-  })
-  paymentSession: PaymentSession;
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
