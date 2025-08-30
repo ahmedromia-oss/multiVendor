@@ -49,8 +49,22 @@ export class ProductResolver
   async findProducts(
     @Args('take', { nullable: true }) take?: number,
     @Args('skip', { nullable: true }) skip?: number,
+    @Args('search', { nullable: true }) search?: string,
+    @Args('minPrice', { nullable: true }) minPrice?: number,
+    @Args('maxPrice', { nullable: true }) maxPrice?: number,
   ): Promise<Product[]> {
-    return await this.findAll(take, skip);
+    const where: any = {};
+
+    if (search) {
+      where.title = { $ilike: `%${search}%` }; // For PostgreSQL, use ILIKE for case-insensitive search
+    }
+    if (minPrice !== undefined || maxPrice !== undefined) {
+      where.price = {};
+      if (minPrice !== undefined) where.price.$gte = minPrice;
+      if (maxPrice !== undefined) where.price.$lte = maxPrice;
+    }
+
+    return await this.productService.findAll({ where, take, skip });
   }
 
   @ResolveField(() => GetVendorDto)
@@ -66,11 +80,10 @@ export class ProductResolver
     }
     return loaders.vendorLoader.load(product.vendorId);
   }
-  
+
   @Mutation(() => ProductDto, { name: 'createProduct' })
-  @UseGuards(AuthGuard, RolesGuard , IsApprovedGaurd)
+  @UseGuards(AuthGuard, RolesGuard, IsApprovedGaurd)
   @Roles(UserType.VENDOR, UserType.SUPER_ADMIN)
-  
   async createProduct(
     @CurrentUser() user: UserToken,
     @Args('data') data: CreateProductInput,
@@ -79,29 +92,29 @@ export class ProductResolver
     return await this.create({ ...data, vendorId: user.sub });
   }
 
-  @UseGuards(AuthGuard, RolesGuard , IsApprovedGaurd)
+  @UseGuards(AuthGuard, RolesGuard, IsApprovedGaurd)
   @Roles(UserType.VENDOR, UserType.SUPER_ADMIN)
   @Mutation(() => String, { name: 'updateProduct' })
   async updateProduct(
-    @Args('prodId') prodId:string,
+    @Args('prodId') prodId: string,
     @Args('data') data: UpdateProductInput,
     @CurrentUser() user: UserToken,
   ): Promise<string> {
-    if(user.type == UserType.SUPER_ADMIN){
-      return await this.update({id:prodId} , data)
+    if (user.type == UserType.SUPER_ADMIN) {
+      return await this.update({ id: prodId }, data);
     }
-    return await this.update({id:prodId , vendorId: user.sub }, data);
+    return await this.update({ id: prodId, vendorId: user.sub }, data);
   }
 
-  @UseGuards(AuthGuard, RolesGuard , IsApprovedGaurd)
+  @UseGuards(AuthGuard, RolesGuard, IsApprovedGaurd)
   @Roles(UserType.VENDOR, UserType.SUPER_ADMIN)
   @Mutation(() => String, { name: 'DeleteProduct' })
   async DeleteProduct(
     @Args('productId') productId: string,
     @CurrentUser() user: UserToken,
   ): Promise<string> {
-    if(user.type == UserType.SUPER_ADMIN){
-      return await this.delete({id:productId})
+    if (user.type == UserType.SUPER_ADMIN) {
+      return await this.delete({ id: productId });
     }
     return await this.delete({ vendorId: user.sub, id: productId });
   }
